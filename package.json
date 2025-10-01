@@ -1,21 +1,24 @@
 {
   "name": "votos",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node dist/index.js",
     "start2": "node dist/index.js",
-    "dev": "nodemon index.js",
-    "start:dev": "nodemon src/main.ts",
+    "start:dev": "nodemon --exec ts-node src/main.ts",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "SCESI",
+  "maintainers": [
+    "abdiel49 <https://github.com/abdiel49>"
+  ],
   "license": "ISC",
-  "description": "",
+  "description": "Curso de Desarrollo Backend en TypeScript con Express, PostgreSQL, Redis, JWT y Docker.",
   "dependencies": {
     "body-parser": "^2.2.0",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0"
   },
   "devDependencies": {
