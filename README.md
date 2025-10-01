@@ -1,6 +1,6 @@
 # 🚀 Curso de Desarrollo Backend con JS/TS
 
-[![Licencia ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+[![Licencia ISC](https://img.shields.io/badge/License-ISC-blue.svg)](./LICENSE)
 
 Este repositorio contiene el **código de referencia** desarrollado durante el **Curso de Desarrollo Backend con JS y TS** impartido en la gestión 2025 por la **Sociedad Científica de Estudiantes de Sistemas e Informática (SCESI)** de la UMSS.
 
