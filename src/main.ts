@@ -1,9 +1,12 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import router from './routes';
-import helthRoter from './helthCheck/helthCheck.route';
 import dotenv from 'dotenv'
-import VoteRouter from './votos/votos.routes';
+
+import router from './config/server.routes'
+
+// import router from './routes';
+// import helthRoter from './helthCheck/helthCheck.route';
+// import VoteRouter from './votos/votos.routes';
 
 dotenv.config()
 
@@ -15,14 +18,8 @@ const app = express()
 
 
 app.use(bodyParser.json())
-// app.use(bodyParser.urlencoded({ extended: true }))
-app.use('/', router)
-app.use('/', helthRoter)
-app.use('/', VoteRouter)
 
-app.get('/test-ts', (req, res) => {
-  res.send('Typescript funciona!')
-})
+app.use('/', router)
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`)
