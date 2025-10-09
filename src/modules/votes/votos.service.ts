@@ -1,46 +1,22 @@
-// import { IServiceResponse } from "../types/services.interface";
-import { IServiceResponse } from "../../types";
+import Vote from "./models/votes.model";
+import { Op } from "sequelize";
+
 import { ICreateVoto } from "./dtos/CreateVote.dto";
-import { IVoto } from "./interfaces/votes.interface";
 
-// mock database
-let votos: IVoto[] = [
-  {
-    id: 1, // se genera en la base de datos
-    name: "Votos nulos",
-    date: "2025-09-29",
-    count: 33,
-    finished: true
-  },
-  {
-    id: 2, // se genera en la base de datos
-    name: "Votos válidos",
-    date: "2025-09-29",
-    count: 200,
-    finished: true
-  },
-  {
-    id: 3, // se genera en la base de datos
-    name: "Votos blancos",
-    date: "2025-09-29",
-    count: 120,
-    finished: true
-  },
-];
+import { IVoteFilter, IVoto } from "./interfaces/votes.interface";
 
-export const createVotoService = (payload: ICreateVoto): IServiceResponse<IVoto> => {
+import { IServiceResponse } from "../../types";
+import { sequelize } from "../../config/database.config";
+
+export const createVotoService = async (payload: ICreateVoto): Promise<IServiceResponse<IVoto>> => {
   try {
-    const voto: IVoto = {
-      id: Date.now(),
-      ...payload,
-    }
-  
-    votos.push(voto);
+    
+    const voto = await Vote.create(payload)
   
     return {
       message: 'Voto creado',
       ok: true,
-      data: voto
+      data: voto.dataValues
     }
   } catch (error) {
     return {
@@ -50,15 +26,57 @@ export const createVotoService = (payload: ICreateVoto): IServiceResponse<IVoto>
   }
 }
 
-export const getVotosService = (): IServiceResponse<IVoto[]> => {
+export const getVotosService = async (filter: IVoteFilter ): Promise<IServiceResponse<Vote[]>> => {
   try {
+    const whereConditions: any = {};
+    
+    if (filter.name) {
+      whereConditions.name = {
+        [Op.iLike]: `%${filter.name}%`
+      };
+    }
+    
+    if (filter.status !== undefined) {
+      whereConditions.finished = filter.status;
+    }
+    
+    // // Aplicar filtros de fecha de manera segura
+    if (filter.startAt || filter.endsAt) {
+      const dateFilter: any = {};
+      
+      if (filter.startAt) {
+        dateFilter[Op.gte] = filter.startAt;
+      }
+      
+      if (filter.endsAt) {
+        dateFilter[Op.lte] = filter.endsAt;
+      }
+      
+      whereConditions.date = dateFilter;
+    }
+
+    const votes = await Vote.findAll({
+      where: whereConditions,
+      order: [['createdAt', 'DESC']],
+      limit: 100 // Limitar resultados para evitar sobrecarga
+    });
+
+    // sequelize.query(`
+    //   SELECT id, name, date, count, finished, created_at AS createdAt, updated_at AS updatedAt 
+    //   FROM votes 
+    //   WHERE name ILIKE '%blanco%' 
+    //   AND finished = false 
+    //   ORDER BY created_at DESC 
+    //   LIMIT 100;
+    // `)
+
     return {
       message: 'Votos obtenidos',
       ok: true,
-      data: votos,
+      data: votes,
     }
   } catch (error) {
-    console.error(error)
+    console.error('Error en getVotosService:', error)
     return {
       message: 'Error al obtener los votos',
       ok: false,
@@ -66,11 +84,11 @@ export const getVotosService = (): IServiceResponse<IVoto[]> => {
   }
 }
 
-export const getVotoByIdService = (id: number): IServiceResponse<IVoto> => {
+export const getVotoByIdService = async (id: number): Promise<IServiceResponse<IVoto>> => {
   try {
-    const voto = votos.find(v => v.id === id);
+    const vote = await Vote.findByPk(id);
     
-    if (!voto) {
+    if (!vote) {
       return {
         message: 'Voto no encontrado',
         ok: false,
@@ -80,7 +98,7 @@ export const getVotoByIdService = (id: number): IServiceResponse<IVoto> => {
     return {
       message: 'Voto obtenido',
       ok: true,
-      data: voto,
+      data: vote.dataValues,
     }
   } catch (error) {
     console.error(error)
@@ -91,26 +109,25 @@ export const getVotoByIdService = (id: number): IServiceResponse<IVoto> => {
   }
 }
 
-export const updateVotoService = (id: number, payload: ICreateVoto): IServiceResponse<IVoto> => {
+export const updateVotoService = async (id: number, payload: ICreateVoto): Promise<IServiceResponse<number>> => {
   try {
-    const voto = votos.find(v => v.id === id);
+    const response = await Vote.update(payload, {
+      where: {
+        id,
+      }
+    })
     
-    if (!voto) {
+    if (response[0] === 0) {
       return {
         message: 'Voto no encontrado',
         ok: false,
       }
     }
-    // update voto
-    voto.name = payload.name;
-    voto.date = payload.date;
-    voto.count = payload.count;
-    voto.finished = payload.finished;
-    
+
     return {
       message: 'Voto actualizado',
       ok: true,
-      data: voto,
+      data: response[0],
     }
   } catch (error) {
     console.error(error)
@@ -121,23 +138,27 @@ export const updateVotoService = (id: number, payload: ICreateVoto): IServiceRes
   }
 }
 
-export const deleteVotoService = (id: number): IServiceResponse<IVoto> => {
+export const deleteVotoService = async (id: number): Promise<IServiceResponse<number>> => {
   try {
-    // find voto
-    const voto = votos.find(v => v.id === id);
-    if (!voto) {
+    const response = await Vote.destroy({
+      where: {
+        id,
+      },
+      // force: true // HARD - delete
+    });
+
+    if (response === 0 ) {
       return {
         message: 'Voto no encontrado',
         ok: false,
       }
     }
-    // delete voto
-    const newVotos = votos.filter(v => v.id !== id);
-    votos = newVotos;
+
+    // vote
     return {
       message: 'Voto eliminado',
       ok: true,
-      data: voto,
+      data: response,
     }
   } catch (error) {
     console.error(error)

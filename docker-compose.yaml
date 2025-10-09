@@ -1,0 +1,14 @@
+services:
+  database:
+    image: postgres:17.6
+    env_file: .env
+    container_name: postgres-database
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: ${PGDATA}
+    ports:
+      - ${PGPORT}:5432
+    volumes:
+      - ./database:/var/lib/postgresql/data

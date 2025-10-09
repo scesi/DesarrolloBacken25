@@ -1,26 +1,21 @@
-import express from 'express'
-import bodyParser from 'body-parser'
-import dotenv from 'dotenv'
+import { sequelize } from './config/database.config';
 
-import router from './config/server.routes'
+import Server from './config/server.config'
+import { ENV } from './config/env.config'
 
-// import router from './routes';
-// import helthRoter from './helthCheck/helthCheck.route';
-// import VoteRouter from './votos/votos.routes';
+async function start() {
+  try {
+    await sequelize.authenticate();    
+    await sequelize.sync();
 
-dotenv.config()
+    console.info('Se ha conectado a la base de datos!')
+    
+    Server.listen(ENV.PORT, () => {
+      console.log(`Server is running on http://localhost:${ENV.PORT}`)
+    })
+  } catch (error) {
+    console.error('Error al iniciar el servidor', error)
+  }
+}
 
-console.log('process.env.PORT', process.env.PORT)
-
-const PORT = process.env.PORT || 3000;
-
-const app = express()
-
-
-app.use(bodyParser.json())
-
-app.use('/', router)
-
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`)
-})
+start()

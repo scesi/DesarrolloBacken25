@@ -6,14 +6,15 @@ import {
   getVotosService,
   updateVotoService,
 } from "./votos.service";
+import { IVoteFilter } from "./interfaces/votes.interface";
 
-export const crearVoto = (req: Request, res: Response) => {
+export const crearVoto = async (req: Request, res: Response) => {
   try {
     const data = req.body;
 
     // TODO: validar datos del body
 
-    const result = createVotoService(data)
+    const result = await createVotoService(data)
 
     if (!result.ok) {
       res.status(400).send({
@@ -38,9 +39,46 @@ export const crearVoto = (req: Request, res: Response) => {
   }
 }
 
-export const obtenerVotos = (req: Request, res: Response) => {
+export const obtenerVotos = async (req: Request, res: Response) => {
   try {
-    const result = getVotosService();
+    const query = req.query;
+    
+    // Validación y sanitización segura de parámetros
+    const filter: IVoteFilter = {};
+    
+    // Sanitizar y validar name
+    if (query.name && typeof query.name === 'string') {
+      const sanitizedName = query.name.trim();
+      if (sanitizedName.length > 0 && sanitizedName.length <= 255) {
+        filter.name = sanitizedName;
+      }
+    }
+    
+    // Sanitizar y validar status
+    if (query.status !== undefined) {
+      if (query.status === 'true') {
+        filter.status = true;
+      } else {
+        filter.status = false;
+      }
+    }
+    
+    // Validar y parsear fechas de manera segura
+    if (query.startAt && typeof query.startAt === 'string') {
+      const startDate = new Date(query.startAt);
+      if (!isNaN(startDate.getTime())) {
+        filter.startAt = startDate;
+      }
+    }
+    
+    if (query.endsAt && typeof query.endsAt === 'string') {
+      const endDate = new Date(query.endsAt);
+      if (!isNaN(endDate.getTime())) {
+        filter.endsAt = endDate;
+      }
+    }
+
+    const result = await getVotosService(filter);
 
     if (!result.ok) {
       res.status(400).send({
@@ -48,6 +86,7 @@ export const obtenerVotos = (req: Request, res: Response) => {
         status: 400,
         ok: false,
       });
+      return;
     }
 
     res.status(200).send({
@@ -57,6 +96,7 @@ export const obtenerVotos = (req: Request, res: Response) => {
       data: result.data,
     });
   } catch (error) {
+    console.error('Error en obtenerVotos:', error);
     res.status(500).send({
       message: 'Error interno del servidor',
       status: 500,
@@ -65,10 +105,22 @@ export const obtenerVotos = (req: Request, res: Response) => {
   }
 }
 
-export const obtenerVotoPorId = (req: Request, res: Response) => {
+export const obtenerVotoPorId = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const result = getVotoByIdService(Number(id));
+    
+    // Validar que el ID sea un número válido
+    const numericId = Number(id);
+    if (isNaN(numericId) || numericId <= 0) {
+      res.status(400).send({
+        message: 'ID de voto inválido',
+        status: 400,
+        ok: false,
+      });
+      return;
+    }
+    
+    const result = await getVotoByIdService(numericId);
 
     if (!result.ok) {
       res.status(400).send({
@@ -76,6 +128,7 @@ export const obtenerVotoPorId = (req: Request, res: Response) => {
         status: 400,
         ok: false,
       });
+      return;
     }
 
     res.status(200).send({
@@ -85,6 +138,7 @@ export const obtenerVotoPorId = (req: Request, res: Response) => {
       data: result.data,
     });
   } catch (error) {
+    console.error('Error en obtenerVotoPorId:', error);
     res.status(500).send({
       message: 'Error interno del servidor',
       status: 500,
@@ -94,12 +148,12 @@ export const obtenerVotoPorId = (req: Request, res: Response) => {
 }
 
 // actualizar todo el recurso
-export const actualizarVoto = (req: Request, res: Response) => {
+export const actualizarVoto = async (req: Request, res: Response) => {
   try {
     const data = req.body;
     const id = data.id;
 
-    const result = updateVotoService(Number(id), data);
+    const result = await updateVotoService(Number(id), data);
 
     if (!result.ok) {
       res.status(400).send({
@@ -124,12 +178,23 @@ export const actualizarVoto = (req: Request, res: Response) => {
   }
 }
 
-export const actualizarVotoParcial = (req: Request, res: Response) => {
+export const actualizarVotoParcial =  async (req: Request, res: Response) => {
   try {
     const data = req.body;
     const id = req.params.id;
+    
+    // Validar que el ID sea un número válido
+    const numericId = Number(id);
+    if (isNaN(numericId) || numericId <= 0) {
+      res.status(400).send({
+        message: 'ID de voto inválido',
+        status: 400,
+        ok: false,
+      });
+      return;
+    }
 
-    const result = updateVotoService(Number(id), data);
+    const result = await updateVotoService(numericId, data);
 
     if (!result.ok) {
       res.status(400).send({
@@ -137,6 +202,7 @@ export const actualizarVotoParcial = (req: Request, res: Response) => {
         status: 400,
         ok: false,
       });
+      return;
     }
 
     res.status(200).send({
@@ -146,6 +212,7 @@ export const actualizarVotoParcial = (req: Request, res: Response) => {
       data: result.data,
     });
   } catch (error) {
+    console.error('Error en actualizarVotoParcial:', error);
     res.status(500).send({
       message: 'Error interno del servidor',
       status: 500,
@@ -154,11 +221,22 @@ export const actualizarVotoParcial = (req: Request, res: Response) => {
   }
 }
 
-export const eliminarVoto = (req: Request, res: Response) => {
+export const eliminarVoto = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
+    
+    // Validar que el ID sea un número válido
+    const numericId = Number(id);
+    if (isNaN(numericId) || numericId <= 0) {
+      res.status(400).send({
+        message: 'ID de voto inválido',
+        status: 400,
+        ok: false,
+      });
+      return;
+    }
 
-    const result = deleteVotoService(Number(id));
+    const result = await deleteVotoService(numericId);
 
     if (!result.ok) {
       res.status(400).send({
@@ -166,6 +244,7 @@ export const eliminarVoto = (req: Request, res: Response) => {
         status: 400,
         ok: false,
       });
+      return;
     }
 
     res.status(200).send({
@@ -175,6 +254,7 @@ export const eliminarVoto = (req: Request, res: Response) => {
       data: result.data,
     });
   } catch (error) {
+    console.error('Error en eliminarVoto:', error);
     res.status(500).send({
       message: 'Error interno del servidor',
       status: 500,
