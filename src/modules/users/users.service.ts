@@ -40,12 +40,22 @@ export const createUserService = async (payload: ICreateUser): Promise<IServiceR
 }
 
 // Esqueleto para obtener el perfil del usuario (implementación pendiente)
-export const getUserProfileService = async (): Promise<IServiceResponse<null>> => {
+export const getUserProfileService = async (id: string): Promise<IServiceResponse<User | null>> => {
   try {
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      return {
+        message: 'No user',
+        ok: false,
+      };
+    }
+
+
     return {
-      message: 'User profile - pending implementation',
+      message: 'User profile',
       ok: true,
-      data: null,
+      data: user,
     }
   } catch (error) {
     console.error('Error in getUserProfileService:', error)
@@ -114,7 +124,7 @@ export const getUsersService = async (filter: IUserFilter): Promise<IServiceResp
   }
 }
 
-export const getUserByIdService = async (id: number): Promise<IServiceResponse<IUser>> => {
+export const getUserByIdService = async (id: string): Promise<IServiceResponse<IUser>> => {
   try {
     const user = await User.findByPk(id);
     
@@ -139,7 +149,7 @@ export const getUserByIdService = async (id: number): Promise<IServiceResponse<I
   }
 }
 
-export const updateUserService = async (id: number, payload: IUpdateUser): Promise<IServiceResponse<number>> => {
+export const updateUserService = async (id: string, payload: IUpdateUser): Promise<IServiceResponse<number>> => {
   try {
     // If updating email, ensure it is not used by another user
     if (payload.email) {
@@ -185,7 +195,7 @@ export const updateUserService = async (id: number, payload: IUpdateUser): Promi
   }
 }
 
-export const deleteUserService = async (id: number): Promise<IServiceResponse<number>> => {
+export const deleteUserService = async (id: string): Promise<IServiceResponse<number>> => {
   try {
     const response = await User.destroy({
       where: {

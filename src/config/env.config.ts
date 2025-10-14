@@ -14,4 +14,7 @@ export const ENV = {
   PGHOST: process.env.PGHOST || 'localhost',
   PGPORT: process.env.PGPORT || '5432',
   NODE_ENV: process.env.NODE_ENV || 'development',
+  PWD_SECRET: process.env.PWD_SECRET || 'asdf',
+  SALTS: process.env.SALTS || '10',
+  JWT_SECRET: process.env.JWT_SECRET || 'asdfg',
 }

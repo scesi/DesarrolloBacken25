@@ -4,15 +4,7 @@ import { registerService, loginService, forgotPasswordService, resetPasswordServ
 export const register = async (req: Request, res: Response) => {
   try {
     const data = req.body;
-    if (!data.firstName || !data.lastName || !data.email || !data.password) {
-      res.status(400).send({ message: 'Missing required fields', status: 400, ok: false });
-      return;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(data.email)) {
-      res.status(400).send({ message: 'Invalid email format', status: 400, ok: false });
-      return;
-    }
+
     const result = await registerService(data);
     res.status(result.ok ? 201 : 400).send({ ...result, status: result.ok ? 201 : 400 });
   } catch (error) {

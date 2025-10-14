@@ -6,7 +6,7 @@ import { IUser, UserRole } from "../interfaces/users.interface";
 export interface UserCreationAttributes extends Optional<IUser, 'id'> {}
 
 class User extends Model<IUser, UserCreationAttributes> implements IUser {
-  public id!: number;
+  public id!: string;
   public firstName!: string;
   public lastName!: string;
   public phoneNumber!: string;
@@ -15,6 +15,7 @@ class User extends Model<IUser, UserCreationAttributes> implements IUser {
   public city!: string;
   public email!: string;
   public role!: UserRole;
+  public password!: string;
   declare createdAt: Date;
   declare updatedAt: Date;
 }
@@ -22,8 +23,8 @@ class User extends Model<IUser, UserCreationAttributes> implements IUser {
 User.init(
   {
     id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,    
       primaryKey: true,
     },
     firstName: {
@@ -89,6 +90,13 @@ User.init(
       defaultValue: UserRole.USER,
       validate: {
         notEmpty: true
+      }
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        len: [4, 150]
       }
     }
   },

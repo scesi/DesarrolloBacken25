@@ -9,4 +9,5 @@ export interface ICreateUser {
   city: string;
   email: string;
   role: UserRole;
+  password: string;
 }

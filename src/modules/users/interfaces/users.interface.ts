@@ -5,7 +5,7 @@ export enum UserRole {
 }
 
 export interface IUser {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
   phoneNumber: string;
@@ -14,6 +14,7 @@ export interface IUser {
   city: string;
   email: string;
   role: UserRole;
+  password: string;
 }
 
 export interface IUserFilter {

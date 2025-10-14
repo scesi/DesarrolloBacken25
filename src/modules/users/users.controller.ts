@@ -11,7 +11,9 @@ import { IUserFilter, UserRole } from "./interfaces/users.interface";
 
 export const getUserProfile = async (req: Request, res: Response) => {
   try {
-    const result = await getUserProfileService();
+    console.log('req.user ', req.user )
+    const user = req.user
+    const result = await getUserProfileService(user.sub);
 
     if (!result.ok) {
       res.status(400).send({
@@ -187,15 +189,15 @@ export const getUserById = async (req: Request, res: Response) => {
     const id = req.params.id;
     
     // Validate id
-    const numericId = Number(id);
-    if (isNaN(numericId) || numericId <= 0) {
-      res.status(400).send({
-        message: 'Invalid user id',
-        status: 400,
-        ok: false,
-      });
-      return;
-    }
+    const numericId = id;
+    // if (isNaN(numericId) || numericId <= 0) {
+    //   res.status(400).send({
+    //     message: 'Invalid user id',
+    //     status: 400,
+    //     ok: false,
+    //   });
+    //   return;
+    // }
     
     const result = await getUserByIdService(numericId);
 
@@ -230,39 +232,39 @@ export const updateUser = async (req: Request, res: Response) => {
     const data = req.body;
     const id = data.id;
 
-    if (!id || isNaN(Number(id))) {
-      res.status(400).send({
-        message: 'Invalid user id',
-        status: 400,
-        ok: false,
-      });
-      return;
-    }
+    // if (!id || isNaN(Number(id))) {
+    //   res.status(400).send({
+    //     message: 'Invalid user id',
+    //     status: 400,
+    //     ok: false,
+    //   });
+    //   return;
+    // }
 
     // Validate email format if provided
-    if (data.email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(data.email)) {
-        res.status(400).send({
-          message: 'Invalid email format',
-          status: 400,
-          ok: false,
-        });
-        return;
-      }
-    }
+    // if (data.email) {
+    //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    //   if (!emailRegex.test(data.email)) {
+    //     res.status(400).send({
+    //       message: 'Invalid email format',
+    //       status: 400,
+    //       ok: false,
+    //     });
+    //     return;
+    //   }
+    // }
 
-    // Validate role
-    if (data.role && !Object.values(UserRole).includes(data.role)) {
-      res.status(400).send({
-        message: `Invalid role. Allowed: ${Object.values(UserRole).join(', ')}`,
-        status: 400,
-        ok: false,
-      });
-      return;
-    }
+    // // Validate role
+    // if (data.role && !Object.values(UserRole).includes(data.role)) {
+    //   res.status(400).send({
+    //     message: `Invalid role. Allowed: ${Object.values(UserRole).join(', ')}`,
+    //     status: 400,
+    //     ok: false,
+    //   });
+    //   return;
+    // }
 
-    const result = await updateUserService(Number(id), data);
+    const result = await updateUserService(id, data);
 
     if (!result.ok) {
       res.status(400).send({
@@ -294,41 +296,41 @@ export const updateUserPartial = async (req: Request, res: Response) => {
     const data = req.body;
     const id = req.params.id;
     
-    // Validate id
-    const numericId = Number(id);
-    if (isNaN(numericId) || numericId <= 0) {
-      res.status(400).send({
-        message: 'Invalid user id',
-        status: 400,
-        ok: false,
-      });
-      return;
-    }
+    // // Validate id
+    // const numericId = Number(id);
+    // if (isNaN(numericId) || numericId <= 0) {
+    //   res.status(400).send({
+    //     message: 'Invalid user id',
+    //     status: 400,
+    //     ok: false,
+    //   });
+    //   return;
+    // }
 
-    // Validate email format if provided
-    if (data.email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(data.email)) {
-        res.status(400).send({
-          message: 'Invalid email format',
-          status: 400,
-          ok: false,
-        });
-        return;
-      }
-    }
+    // // Validate email format if provided
+    // if (data.email) {
+    //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    //   if (!emailRegex.test(data.email)) {
+    //     res.status(400).send({
+    //       message: 'Invalid email format',
+    //       status: 400,
+    //       ok: false,
+    //     });
+    //     return;
+    //   }
+    // }
 
-    // Validate role if provided
-    if (data.role && !Object.values(UserRole).includes(data.role)) {
-      res.status(400).send({
-        message: `Invalid role. Allowed: ${Object.values(UserRole).join(', ')}`,
-        status: 400,
-        ok: false,
-      });
-      return;
-    }
+    // // Validate role if provided
+    // if (data.role && !Object.values(UserRole).includes(data.role)) {
+    //   res.status(400).send({
+    //     message: `Invalid role. Allowed: ${Object.values(UserRole).join(', ')}`,
+    //     status: 400,
+    //     ok: false,
+    //   });
+    //   return;
+    // }
 
-    const result = await updateUserService(numericId, data);
+    const result = await updateUserService(id, data);
 
     if (!result.ok) {
       res.status(400).send({
@@ -359,18 +361,18 @@ export const deleteUser = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     
-    // Validate id
-    const numericId = Number(id);
-    if (isNaN(numericId) || numericId <= 0) {
-      res.status(400).send({
-        message: 'Invalid user id',
-        status: 400,
-        ok: false,
-      });
-      return;
-    }
+    // // Validate id
+    // const numericId = Number(id);
+    // if (isNaN(numericId) || numericId <= 0) {
+    //   res.status(400).send({
+    //     message: 'Invalid user id',
+    //     status: 400,
+    //     ok: false,
+    //   });
+    //   return;
+    // }
 
-    const result = await deleteUserService(numericId);
+    const result = await deleteUserService(id);
 
     if (!result.ok) {
       res.status(404).send({

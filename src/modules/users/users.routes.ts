@@ -8,13 +8,15 @@ import {
   deleteUser, 
   getUserProfile,
 } from './users.controller';
+import { validateSesionUser } from '../../middleware/userSesion.middleware';
 
 const UserRouter = Router();
+
+UserRouter.get('/profile', validateSesionUser, getUserProfile);
 
 UserRouter.post('/', createUser);
 
 UserRouter.get('/', getUsers);
-UserRouter.get('/profile', getUserProfile);
 UserRouter.get('/:id', getUserById);
 
 UserRouter.put('/:id', updateUser);
