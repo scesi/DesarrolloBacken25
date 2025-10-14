@@ -22,6 +22,7 @@ export const crearVoto = async (req: Request, res: Response) => {
         status: 400,
         ok: false,
       });  
+      return;
     }
   
     res.status(201).send({
@@ -31,6 +32,7 @@ export const crearVoto = async (req: Request, res: Response) => {
       data: result.data,
     });
   } catch (error) {
+    console.error('Error en crearVoto:', error);
     res.status(500).send({
       message: 'Error interno del servidor',
       status: 500,
@@ -161,6 +163,7 @@ export const actualizarVoto = async (req: Request, res: Response) => {
         status: 400,
         ok: false,
       });
+      return;
     }
 
     res.status(200).send({
@@ -170,6 +173,7 @@ export const actualizarVoto = async (req: Request, res: Response) => {
       data: result.data,
     });
   } catch (error) {
+    console.error('Error en actualizarVoto:', error);
     res.status(500).send({
       message: 'Error interno del servidor',
       status: 500,
