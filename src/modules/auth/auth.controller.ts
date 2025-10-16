@@ -1,5 +1,7 @@
-import { Request, Response } from 'express';
+import e, { Request, Response } from 'express';
 import { registerService, loginService, forgotPasswordService, resetPasswordService } from './auth.service';
+import { LoginSchema } from './schemas/Login.schema';
+import { ENV } from '../../config/env.config';
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -15,13 +17,24 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const data = req.body;
-    if (!data.email || !data.password) {
-      res.status(400).send({ message: 'Missing credentials', status: 400, ok: false });
+    const { success, data, error} = LoginSchema.safeParse(req.body);
+
+    if (error && !success) {
+      res.status(400).send({
+        // message: error.issues,
+        message: ENV.NODE_ENV === 'development' ? error.issues : "Bad request",
+        status: 400,
+        ok: false,
+      });
       return;
     }
+
     const result = await loginService(data);
-    res.status(result.ok ? 200 : 401).send({ ...result, status: result.ok ? 200 : 401 });
+
+    res.status(result.ok ? 200 : 401).send({ 
+      ...result,
+      status: result.ok ? 200 : 401,
+    });
   } catch (error) {
     console.error('Error in login:', error);
     res.status(500).send({ message: 'Internal server error', status: 500, ok: false });

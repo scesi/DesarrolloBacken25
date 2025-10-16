@@ -1,11 +1,3 @@
-export interface IRegisterDto {
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  phoneCountryCode: string;
-  country: string;
-  city: string;
-  email: string;
-  password: string;
-}
+import { IUser } from "../../users/interfaces/users.interface";
 
+export type IRegisterDto = Omit<IUser, 'id'>

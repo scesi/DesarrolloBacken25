@@ -13,6 +13,7 @@ export const getUserProfile = async (req: Request, res: Response) => {
   try {
     console.log('req.user ', req.user )
     const user = req.user
+
     const result = await getUserProfileService(user.sub);
 
     if (!result.ok) {

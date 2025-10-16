@@ -6,7 +6,8 @@ import { ENV } from './config/env.config'
 async function start() {
   try {
     await sequelize.authenticate();    
-    await sequelize.sync();
+    
+    // await sequelize.sync();
 
     console.info('Se ha conectado a la base de datos!')
     
