@@ -8,6 +8,7 @@ import PostsRouter from '../modules/posts/posts.routes'
 import { validateSesionUser } from '../middleware/userSesion.middleware'
 import { userRoleValidation } from '../middleware/userRole.middleware'
 import { UserRole } from '../modules/users/interfaces/users.interface'
+import ChatRouter from '../modules/chats/chat.routes'
 
 const router = Router()
 
@@ -17,6 +18,8 @@ router.use('/voto', VoteRouter)
 router.use('/users', UserRouter)
 router.use('/auth', AuthRouter)
 router.use('/posts', PostsRouter)
+router.use('/chats', ChatRouter)
+
 
 router.use((req, res) => {
   res.status(404).send({

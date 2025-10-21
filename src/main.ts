@@ -1,7 +1,11 @@
+import { Server as SocketIOServer } from 'socket.io'
+import http from 'http'
+
 import { sequelize } from './config/database.config';
 
 import Server from './config/server.config'
 import { ENV } from './config/env.config'
+import { initSocketIO } from './config/socketio.config';
 
 async function connectWithRetry() {
   try {
@@ -18,6 +22,24 @@ async function start() {
     await connectWithRetry()
     // await sequelize.authenticate(); 
     // await sequelize.sync();
+
+    // const serverExpress = http.createServer(Server)
+    
+    // const io = new SocketIOServer(
+    //   serverExpress,
+    //   // {
+    //   //   cors: {
+    //   //     origin: `http://localhost:${ENV.SOCKETIO_PORT}`,
+    //   //     methods: ['GET', 'POST']
+    //   //   }
+    //   // }
+    // )
+
+    initSocketIO();
+
+    // io.listen(Number(ENV.SOCKETIO_PORT))
+
+    // console.log(`Server Socket io is running on http://localhost:${ENV.SOCKETIO_PORT}`)
 
     console.info('Se ha conectado a la base de datos!')
     
