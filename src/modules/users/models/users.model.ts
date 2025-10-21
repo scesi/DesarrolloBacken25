@@ -16,6 +16,7 @@ class User extends Model<IUser, UserCreationAttributes> implements IUser {
   public email!: string;
   public role!: UserRole;
   public password!: string;
+  // public dateOfBith!: Date;
   declare createdAt: Date;
   declare updatedAt: Date;
 }
@@ -98,7 +99,11 @@ User.init(
       validate: {
         len: [4, 150]
       }
-    }
+    },
+    // dateOfBith: {
+    //   type: DataTypes.DATE,
+    //   allowNull: true,
+    // }
   },
   {
     sequelize,

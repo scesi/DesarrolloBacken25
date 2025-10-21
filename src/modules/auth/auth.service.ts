@@ -25,13 +25,15 @@ export const registerService = async (payload: IRegisterDto): Promise<IAuthRespo
     }
 
     const user = await User.create({
-      firstName: payload.firstName,
-      lastName: payload.lastName,
-      phoneNumber: payload.phoneNumber,
-      phoneCountryCode: payload.phoneCountryCode,
-      country: payload.country,
-      city: payload.city,
-      email: payload.email,
+      ...payload,
+      // firstName: payload.firstName,
+      // lastName: payload.lastName,
+      // phoneNumber: payload.phoneNumber,
+      // phoneCountryCode: payload.phoneCountryCode,
+      // country: payload.country,
+      // city: payload.city,
+      // email: payload.email,
+      // role: payload.role,
       role: UserRole.USER,
       password: passHash,
     });
