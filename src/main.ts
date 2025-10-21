@@ -3,10 +3,20 @@ import { sequelize } from './config/database.config';
 import Server from './config/server.config'
 import { ENV } from './config/env.config'
 
+async function connectWithRetry() {
+  try {
+    await sequelize.authenticate();
+    console.info('Database connected');
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+    setTimeout(connectWithRetry, 5000);
+  }
+}
+
 async function start() {
   try {
-    await sequelize.authenticate();    
-    
+    await connectWithRetry()
+    // await sequelize.authenticate(); 
     // await sequelize.sync();
 
     console.info('Se ha conectado a la base de datos!')

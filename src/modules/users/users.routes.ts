@@ -16,9 +16,9 @@ const UserRouter = Router();
 
 UserRouter.get('/profile', validateSesionUser, getUserProfile);
 
-UserRouter.post('/', createUser);
+// UserRouter.post('/', createUser); // esto se hace a travez del register
 
-UserRouter.get('/', getUsers);
+UserRouter.get('/', getUsers); // solo para admins?
 // UserRouter.get('/:id', getUserById);
 UserRouter.get(
   '/:id',
@@ -27,7 +27,7 @@ UserRouter.get(
   getUserById,
 );
 
-UserRouter.put('/:id', updateUser);
+// UserRouter.put('/:id', updateUser);
 UserRouter.patch('/:id', updateUserPartial);
 
 UserRouter.delete('/:id', deleteUser);

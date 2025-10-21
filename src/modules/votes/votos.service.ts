@@ -10,7 +10,6 @@ import { sequelize } from "../../config/database.config";
 
 export const createVotoService = async (payload: ICreateVoto): Promise<IServiceResponse<IVoto>> => {
   try {
-    
     const voto = await Vote.create(payload)
   
     return {
